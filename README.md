@@ -52,14 +52,33 @@ Functional examples are included in the
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| bucket\_name | The name of the bucket to create | `string` | n/a | yes |
-| project\_id | The project ID to deploy to | `string` | n/a | yes |
+| delete\_default\_internet\_gateway\_routes | If set, ensure that all routes within the network specified whose names begin with 'default-route' and with a next hop of 'default-internet-gateway' are deleted | `bool` | `false` | no |
+| deployment\_name | The name of the current deployment | `string` | n/a | yes |
+| enable\_internal\_traffic | Enable a firewall rule to allow all internal TCP, UDP, and ICMP traffic within the network | `bool` | `true` | no |
+| firewall\_log\_config | Firewall log configuration for Toolkit firewall rules (var.enable\_iap\_ssh\_ingress and others) | `string` | `"DISABLE_LOGGING"` | no |
+| firewall\_rules | List of firewall rules | `any` | `[]` | no |
+| mtu | The network MTU (default: 8896). Recommended values: 0 (use Compute Engine default), 1460 (default outside HPC environments), 1500 (Internet default), or 8896 (for Jumbo packets). Allowed are all values in the range 1300 to 8896, inclusively. | `number` | `8896` | no |
+| network\_description | An optional description of this resource (changes will trigger resource destroy/create) | `string` | `""` | no |
+| network\_name | The name of the network to be created (if unsupplied, will default to "{deployment\_name}-net") | `string` | `null` | no |
+| network\_profile | A full or partial URL of the network profile to apply to this network.<br>This field can be set only at resource creation time. For example, the<br>following are valid URLs:<br>- https://www.googleapis.com/compute/beta/projects/{projectId}/global/networkProfiles/{network_profile_name}<br>- projects/{projectId}/global/networkProfiles/{network\_profile\_name}} | `string` | n/a | yes |
+| network\_routing\_mode | The network routing mode (default "REGIONAL") | `string` | `"REGIONAL"` | no |
+| nic\_type | NIC type for use in modules that use the output | `string` | `"MRDMA"` | no |
+| project\_id | Project in which the HPC deployment will be created | `string` | n/a | yes |
+| region | The default region for Cloud resources | `string` | n/a | yes |
+| shared\_vpc\_host | Makes this project a Shared VPC host if 'true' (default 'false') | `bool` | `false` | no |
+| subnetworks\_template | Specifications for the subnetworks that will be created within this VPC.<br><br>count       (number, required, number of subnets to create, default is 8)<br>name\_prefix (string, required, subnet name prefix, default is deployment name)<br>ip\_range    (string, required, range of IPs for all subnets to share (CIDR format), default is 192.168.0.0/16)<br>region      (string, optional, region to deploy subnets to, defaults to vars.region) | <pre>object({<br>    count       = number<br>    name_prefix = string<br>    ip_range    = string<br>    region      = optional(string)<br>  })</pre> | <pre>{<br>  "count": 8,<br>  "ip_range": "192.168.0.0/16",<br>  "name_prefix": null,<br>  "region": null<br>}</pre> | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| bucket\_name | Name of the bucket |
+| network\_id | ID of the new VPC network |
+| network\_name | Name of the new VPC network |
+| network\_self\_link | Self link of the new VPC network |
+| subnetwork\_interfaces | Full list of subnetwork objects belonging to the new VPC network (compatible with vm-instance and Slurm modules) |
+| subnetwork\_interfaces\_gke | Full list of subnetwork objects belonging to the new VPC network (compatible with gke-node-pool) |
+| subnetwork\_name\_prefix | Prefix of the RDMA subnetwork names |
+| subnetworks | Full list of subnetwork objects belonging to the new VPC network |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
